@@ -1,0 +1,83 @@
+import Quandl
+import numpy as np 
+import pandas as pd 
+import operator
+import statsmodels.formula.api as sm 
+from sklearn import datasets, linear_model
+import matplotlib.pyplot as plt 
+
+# We know that in 2013 Bitcoin grew in price, then in 2014 is crashed.
+# Let's examine the given data to see what happened.
+
+# Download the data from Quandl
+df_bitcoin = Quandl.get("BCHARTS/MTGOXUSD",authtoken="P5_mu65sQdbNKTppzVE8")
+df_bitcoin1 = np.array(df_bitcoin)
+df_sp500 = Quandl.get("YAHOO/INDEX_GSPC",authtoken="P5_mu65sQdbNKTppzVE8")
+
+#print df_bitcoin.head()
+#print df_bitcoin.corr()
+# This line of code prints the bitcoin data as a numpy array
+#print df_bitcoin1[0:10]
+
+# Split up the Quandl data into 2013 data
+df_bitcoin13 = pd.DataFrame() 
+for i in df_bitcoin.index:
+	if i.year == 2013: 
+		#print 'true'
+		#print type(df_bitcoin.loc[str(i)])
+		df_bitcoin13 = df_bitcoin13.append(df_bitcoin.loc[str(i)])#ignore_index=True)
+
+#bitcoin 2013 data as a numpy array
+df_bitcoin131 = np.array(df_bitcoin13)
+
+# Split up the Quandl data into 2014 data
+df_bitcoin14 = pd.DataFrame()
+for i in df_bitcoin.index:
+	if i.year == 2014:
+		df_bitcoin14 = df_bitcoin14.append(df_bitcoin.loc[str(i)])
+
+#bitcoin 2104 data as a numpy array
+df_bitcoin141 = np.array(df_bitcoin14)
+
+# Split up Quandl SP 500 data into 2013 dat
+df_sp500_13 = pd.DataFrame()
+for i in df_sp500.index:
+	if i.year == 2013:
+		df_sp500_13 = df_sp500_13.append(df_sp500.loc[str(i)])
+
+############################################################################ 
+# DATA VISUALIZATION
+# Printing of arrays and diagrams
+#########################################################################
+#plt.scatter(df_sp500_13['Volume'],df_bitcoin13['Volume'])
+arrayV = np.array(df_sp500_13['Volume'] / df_sp500_13['Volume'].mean())
+plt.scatter(df_sp500_13.index,arrayV)
+#plt.scatter(df_bitcoin13.index,array1)
+plt.show()
+
+#################################################################################
+
+#### BUILDING A LINEAR REGRESSION MODEL FOR 2013 DATA
+
+#    MULTI VARIATE GIVEN OPEN, CLOSE, VOLUME(BTC), TO ESTIMATE WEIGHTED PRICE
+#################################################################################
+
+#Split up the 2013 data into these different arrays
+open_13 = np.array(df_bitcoin13['Open'])
+close_13 = np.array(df_bitcoin13['Close'])
+vol_13 = np.array(df_bitcoin13['Volume (BTC)'])
+price_13 = np.array(df_bitcoin13['Weighted Price'])
+
+open_14 = np.array(df_bitcoin14['Open'])
+close_14 = np.array(df_bitcoin14['Close'])
+vol_14 = np.array(df_bitcoin14['Volume (BTC)'])
+price_14 = np.array(df_bitcoin14['Weighted Price'])
+
+print len(df_bitcoin14)
+print len(df_bitcoin13)
+#print close_13
+#print vol_13
+#print price_13
+#clf = linear_model.LinearRegression()
+#clf.fit((open_13, close_13, vol_13), price_13)
+#clf.fit(open_13, price_13)
